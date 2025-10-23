@@ -1,0 +1,4 @@
+nombre	apellidos	edad	mascotas
+martha	leiva	21	perro
+blanca	escobar	20	perro
+sara	cameron	23	pez
