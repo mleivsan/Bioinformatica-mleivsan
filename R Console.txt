@@ -1,0 +1,214 @@
+
+R version 4.5.1 (2025-06-13) -- "Great Square Root"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[R.app GUI 1.82 (8536) aarch64-apple-darwin20]
+
+[Historial restablecido desde /Users/marthaleiva/.Rapp.history]
+
+> # MarthaLeivaSanchez-Viñas_Trabajo2.R
+> # Trabajo final Bioinformática - Curso 25/26
+> # Análisis de parámetros biomédicos por tratamiento
+> 
+> # 1. Cargar librerías (si necesarias) y datos del archivo "datos_biomed.csv". (0.5 pts)
+> install.packages(c("tidyverse"))
+--- Please select a CRAN mirror for use in this session ---
+trying URL 'https://ftp.cixug.es/CRAN/bin/macosx/big-sur-arm64/contrib/4.5/tidyverse_2.0.0.tgz'
+Content type 'application/octet-stream' length 428840 bytes (418 KB)
+==================================================
+downloaded 418 KB
+
+
+The downloaded binary packages are in
+	/var/folders/8q/nbx_v5lj79g338_qpww39ybh0000gn/T//RtmphhP4XH/downloaded_packages
+> library(tidyverse)
+── Attaching core tidyverse packages ──────────────────────────────────────────────────────────────────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.0     ✔ tibble    3.3.0
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.2.0     
+── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+> datos <- read.csv("datos_biomed.csv", header = TRUE, sep = ",")
+> 
+> # 2. Exploración inicial con las funciones head(), summary(), dim() y str(). ¿Cuántas variables hay? ¿Cuántos tratamientos? (0.5 pts)
+> head(datos)
+  ID Tratamiento Glucosa Presion Colesterol
+1  1    FarmacoB   113.7   126.8      201.4
+2  2     Placebo   113.3   117.9      157.8
+3  3    FarmacoB   118.4   115.6      213.9
+4  4    FarmacoB   116.3   141.9      220.3
+5  5     Placebo    96.9   133.0      197.5
+6  6     Placebo    90.6   111.3      223.0
+> summary(datos)
+       ID         Tratamiento           Glucosa          Presion        Colesterol   
+ Min.   :  1.00   Length:100         Min.   : 69.70   Min.   :103.3   Min.   :149.3  
+ 1st Qu.: 25.75   Class :character   1st Qu.: 97.38   1st Qu.:118.3   1st Qu.:183.7  
+ Median : 50.50   Mode  :character   Median :106.45   Median :126.6   Median :199.4  
+ Mean   : 50.50                      Mean   :106.51   Mean   :126.7   Mean   :199.9  
+ 3rd Qu.: 75.25                      3rd Qu.:115.62   3rd Qu.:134.1   3rd Qu.:216.3  
+ Max.   :100.00                      Max.   :150.60   Max.   :153.9   Max.   :252.0  
+> dim(datos)
+[1] 100   5
+> str(datos)
+'data.frame':	100 obs. of  5 variables:
+ $ ID         : int  1 2 3 4 5 6 7 8 9 10 ...
+ $ Tratamiento: chr  "FarmacoB" "Placebo" "FarmacoB" "FarmacoB" ...
+ $ Glucosa    : num  113.7 113.3 118.4 116.3 96.9 ...
+ $ Presion    : num  127 118 116 142 133 ...
+ $ Colesterol : num  201 158 214 220 198 ...
+> ncol(datos)
+[1] 5
+> length(unique(datos$Tratamiento))
+[1] 3
+> 
+> # 3. Una gráfica que incluya todos los boxplots por tratamiento. (1 pt)
+> ggplot(datos, aes(x = Tratamiento, y = Glucosa, fill = Tratamiento)) +
++   geom_boxplot() +
++   theme_minimal() +
++   labs(title = "Boxplots de Glucosa por Tratamiento")
+>   
+> # 4. Realiza un violin plot (investiga qué es). (1 pt)
+> ggplot(datos, aes(x = Tratamiento, y = Glucosa, fill = Tratamiento)) +
++   geom_violin(trim = FALSE) +
++   geom_boxplot(width = 0.1, fill = "white") +
++   theme_minimal()
+> 
+> # 5. Realiza un gráfico de dispersión "Glucosa vs Presión". Emplea legend() para incluir una leyenda en la parte inferior derecha. (1 pt)
+> plot(datos$Glucosa, datos$Presion,
++      col = as.factor(datos$Tratamiento), pch = 19,
++      xlab = "Glucosa", ylab = "Presión",
++      main = "Glucosa vs Presión por tratamiento")
+> legend("bottomright", legend = levels(factor(datos$Tratamiento)), col = 1:length(levels(factor(datos$Tratamiento))), pch = 19)
+> 
+> # 6. Realiza un facet Grid (investiga qué es): Colesterol vs Presión por tratamiento. (1 pt)
+> ggplot(datos, aes(x = Colesterol, y = Presion)) +
++   geom_point() +
++   facet_grid(~ Tratamiento) +
++   theme_minimal()
+> 
+> # 7. Realiza un histogramas para cada variable. (0.5 pts)
+> datos_long <- datos %>%
++   pivot_longer(cols = -Tratamiento, names_to = "Variable", values_to = "Valor")
+> datos_long %>%
++   ggplot(aes(x = Valor, fill = Variable)) +
++   geom_histogram() +
++   facet_wrap(~ Variable, scales = "free") +
++   theme_minimal()
+`stat_bin()` using `bins = 30`. Pick better value `binwidth`.
+> 
+> # 8. Crea un factor a partir del tratamiento. Investifa factor(). (1 pt)
+> datos$Tratamiento <- factor(datos$Tratamiento)
+> str(datos$Tratamiento)
+ Factor w/ 3 levels "FarmacoA","FarmacoB",..: 2 3 2 2 3 3 2 1 2 2 ...
+> 
+> # 9. Obtén la media y desviación estándar de los niveles de glucosa por tratamiento. Emplea aggregate() o apply(). (0.5 pts)
+> aggregate(Glucosa ~ Tratamiento, datos, mean)
+  Tratamiento  Glucosa
+1    FarmacoA 110.4750
+2    FarmacoB 105.5839
+3     Placebo 103.0455
+> aggregate(Glucosa ~ Tratamiento, datos, sd)
+  Tratamiento  Glucosa
+1    FarmacoA 13.58309
+2    FarmacoB 12.15064
+3     Placebo 17.18486
+> 
+> # 10. Extrae los datos para cada tratamiento y almacenalos en una variable. Ejemplo todos los datos de Placebo en una variable llamada placebo. (1 pt)
+> placebo  <- subset(datos, Tratamiento == "Placebo")
+> farmacoA <- subset(datos, Tratamiento == "FarmacoA")
+> farmacoB <- subset(datos, Tratamiento == "FarmacoB")
+> #Comprobación de las variables:
+> head(placebo)
+   ID Tratamiento Glucosa Presion Colesterol
+2   2     Placebo   113.3   117.9      157.8
+5   5     Placebo    96.9   133.0      197.5
+6   6     Placebo    90.6   111.3      223.0
+13 13     Placebo   112.5   130.5      189.6
+16 16     Placebo    98.9   110.5      187.9
+21 21     Placebo   150.6   124.2      187.4
+> head(farmacoA)
+   ID Tratamiento Glucosa Presion Colesterol
+8   8    FarmacoA   126.5   137.2      241.9
+15 15    FarmacoA    94.4   132.3      179.1
+17 17    FarmacoA   124.6   117.5      165.1
+18 18    FarmacoA   121.9   113.7      179.0
+19 19    FarmacoA   132.4   132.7      235.9
+20 20    FarmacoA   115.1   137.7      231.5
+> head(farmacoB)
+   ID Tratamiento Glucosa Presion Colesterol
+1   1    FarmacoB   113.7   126.8      201.4
+3   3    FarmacoB   118.4   115.6      213.9
+4   4    FarmacoB   116.3   141.9      220.3
+7   7    FarmacoB    82.4   136.2      168.5
+9   9    FarmacoB   102.3   132.3      180.4
+10 10    FarmacoB    98.8   138.5      169.4
+> 
+> # 11. Evalúa si los datos siguen una distribución normal y realiza una comparativa de medias acorde. (1 pt)
+> shapiro.test(datos$Glucosa[datos$Tratamiento == "Placebo"])
+
+	Shapiro-Wilk normality test
+
+data:  datos$Glucosa[datos$Tratamiento == "Placebo"]
+W = 0.967, p-value = 0.402
+
+> shapiro.test(datos$Glucosa[datos$Tratamiento == "FarmacoA"])
+
+	Shapiro-Wilk normality test
+
+data:  datos$Glucosa[datos$Tratamiento == "FarmacoA"]
+W = 0.9648, p-value = 0.3008
+
+> shapiro.test(datos$Glucosa[datos$Tratamiento == "FarmacoB"])
+
+	Shapiro-Wilk normality test
+
+data:  datos$Glucosa[datos$Tratamiento == "FarmacoB"]
+W = 0.96578, p-value = 0.411
+
+> kruskal.test(Glucosa ~ Tratamiento, data = datos)
+
+	Kruskal-Wallis rank sum test
+
+data:  Glucosa by Tratamiento
+Kruskal-Wallis chi-squared = 5.3481, df = 2, p-value = 0.06897
+
+> 
+> # 12. Realiza un ANOVA sobre la glucosa para cada tratamiento. (1 pt)
+> anova_glucosa <- aov(Glucosa ~ Tratamiento, data = datos)
+> summary(anova_glucosa)
+            Df Sum Sq Mean Sq F value Pr(>F)
+Tratamiento  2    989   494.3   2.358    0.1
+Residuals   97  20337   209.7               
+> TukeyHSD(anova_glucosa)
+  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = Glucosa ~ Tratamiento, data = datos)
+
+$Tratamiento
+                       diff       lwr       upr     p adj
+FarmacoB-FarmacoA -4.891129 -13.33572 3.5534658 0.3560476
+Placebo-FarmacoA  -7.429545 -15.73551 0.8764146 0.0892753
+Placebo-FarmacoB  -2.538416 -11.15878 6.0819491 0.7635254
+
+> 
+> 
